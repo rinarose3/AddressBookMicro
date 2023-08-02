@@ -1,0 +1,7 @@
+tr.selected {
+    background-color: azure;
+}
+.isDisabled{
+    cursor: not-allowed;
+    filter: grayscale(100%)
+}

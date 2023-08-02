@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Адресная книга</title>
+    <link rel="shortcut icon" type="image/png" th:href="@{/biblSite/adress1.png}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/biblSite/styles.css}"/>
+</head>
+<body>
+    <table>
+        <tr>
+            <td th:each="m : ${menu}">
+                <a th:class="${m[dis]}" th:id="${m[id]}" th:href="@{${m[url_name]}}">
+                    <img th:src="@{/biblSite/}+${m[title]}+'.png'" width="35" height="35"/>
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <div th:replace="~{${headerTemplate}}"></div>
+
+    <script type="text/javascript">
+        function block_url() {
+            var par = this.href.search('[\?&]pk=([^&#]*)');
+            return par != -1;
+        }
+        var m_change = document.getElementById('change');
+        m_change.onclick = block_url;
+
+        var m_delete = document.getElementById('delete');
+        m_delete.onclick = block_url;
+    </script>
+</body>

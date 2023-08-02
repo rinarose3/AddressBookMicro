@@ -1,0 +1,38 @@
+<h2 th:text="${Title}"></h2>
+<form id="myForm" action="javascript: sandForm();">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+    <input  th:if="${requestType == 'PUT'}" type="hidden" name="id" th:value="${id}">
+
+    <p th:each="f : ${fields}">
+        <label th:for="'id_'+${f[field]}" th:text="${f[label]}+':'"></label>
+        <input type="text" th:name="${f[field]}" th:id="'id_'+${f[field]}" th:value="${f[value]}" required>
+    </p>
+
+    <p><button type="submit">Отправить</button></p>
+</form>
+<script type="text/javascript">
+    async function sandForm(){
+
+        var form = document.getElementById("myForm");
+        var formData = new FormData(form);
+
+        var jsonData = {};
+        formData.forEach(function(value, key) {
+            jsonData[key] = value;
+            console.log(value);
+        });
+
+        await fetch("[[ @{${urlAPIablist}} ]]", {
+            method: "[[ ${requestType} ]]",
+            headers: {
+                "Content-Type": "application/json",
+                 "X-CSRF-TOKEN": document.getElementsByName("_csrf")[0].value
+            },
+            body: JSON.stringify(jsonData),
+        });
+        document.location.href = "[[ @{${rootUrl}} ]]"
+    }
+
+    console.log(document.cookie.split(';'));
+</script>

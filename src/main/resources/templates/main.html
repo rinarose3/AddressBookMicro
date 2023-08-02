@@ -1,0 +1,89 @@
+    <h1>Главная страница</h1>
+    <form id="myForm">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    </form>
+    <table border="3" id="myTable">
+
+        <tr>
+            <th>id</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Телефон</th>
+            <th>mail</th>
+            <th>Заметки</th>
+        </tr>
+
+    </table>
+
+    <script type="text/javascript">
+
+        async function deletePerson(pk) {
+            await fetch("[[ @{${urlAPIablist}} ]]"+"?id="+pk, {
+                method: "DELETE",
+                headers: {
+                 "X-CSRF-TOKEN": document.getElementsByName("_csrf")[0].value
+                },
+            });
+            document.location.href = "[[ @{${rootUrl}} ]]"
+        }
+
+
+        function trOnClick() {
+        // Если строка уже выделена, то снимаем выделение
+            if (!this.classList.contains('selected')) {
+                var cur_table = document.getElementById('myTable');
+                var cur_rows = cur_table.getElementsByTagName('tr');
+                for (var j = 0; j < cur_rows.length; j++){
+                if (cur_rows[j].classList.contains('selected')) {
+                        cur_rows[j].classList.remove('selected');
+                    }
+                }
+                this.classList.add('selected');
+                var ch = document.getElementById('change')
+                ch.href = "[[ @{${urlchange}} ]]"+"?pk=" + this.getAttribute('pk');
+                if (ch.classList.contains('isDisabled')){
+                    ch.classList.remove('isDisabled')
+                }
+
+                var dl = document.getElementById('delete')
+                dl.href = "#"
+                dl.setAttribute("pk", this.getAttribute('pk'))
+                dl.onclick = function() { deletePerson(this.getAttribute('pk')) };
+                if (dl.classList.contains('isDisabled')){
+                    dl.classList.remove('isDisabled')
+                }
+            }
+        };
+
+        async function loadTable() {
+            let response = await fetch("[[ @{${urlAPIablist}} ]]");
+            let peoples = await response.json();
+            var table = document.getElementById('myTable');
+            for (pk in peoples){
+            var newRow = table.insertRow();
+            newRow.onclick = trOnClick;
+            newRow.setAttribute("pk", peoples[pk].id);
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].id;
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].name;
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].fam;
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].tel;
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].mail;
+
+            var newCell = newRow.insertCell();
+            newCell.textContent = peoples[pk].note;
+
+            }
+            console.log(peoples);
+        }
+        loadTable();
+    </script>
