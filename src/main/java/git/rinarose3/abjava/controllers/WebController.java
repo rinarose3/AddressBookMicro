@@ -21,70 +21,43 @@ import java.util.Optional;
 @RequestMapping("/bibl/")
 public class WebController {
 
-    // Константы для URL-адресов API
-    @Autowired
+
+    /*@Autowired
     private WebService webService;
-
     @Autowired
-    private AddressBookRepository addressBookRepository;
+    private AddressBookRepository addressBookRepository;*/
 
+    // Константы для URL-адресов API
+    private final WebService webService;
+    private final AddressBookRepository addressBookRepository;
     private final String rootUrl;
     private final String urlAPIablist;
     final String urlchange = "change/";
+
     private final List<HashMap<String, String>> menu;
 
-    public WebController() {
+    @Autowired
+    public WebController(WebService webService, AddressBookRepository addressBookRepository) {
+        this.webService = webService;
+        this.addressBookRepository = addressBookRepository;
+
         rootUrl = getClass().getAnnotation(RequestMapping.class).value()[0];
         urlAPIablist = AddressBookController.class.getAnnotation(RequestMapping.class).value()[0];
         menu = new ArrayList<>();
-        HashMap<String, String> homeItem = new HashMap<>() {{
-            put("title", "home");
-            put("url_name", rootUrl);
-            put("dis", "isEnabled");
-            put("id", "main");
-        }};
-        menu.add(homeItem);
 
-        HashMap<String, String> addItem = new HashMap<>() {{
-            put("title", "add");
-            put("url_name", rootUrl+"add/");
-            put("dis", "isEnabled");
-            put("id", "add");
-        }};
-        menu.add(addItem);
-
-        // Элемент изменения
-        HashMap<String, String> changeItem = new HashMap<>() {{
-            put("title", "edit-icon");
-            put("url_name", rootUrl+"change/");
-            put("dis", "isDisabled");
-            put("id", "change");
-        }};
-        menu.add(changeItem);
-
-        // Элемент удаления
-        HashMap<String, String> deleteItem = new HashMap<>() {{
-            put("title", "delete-icon-1");
-            put("url_name", "#");
-            put("dis", "isDisabled");
-            put("id", "delete");
-        }};
-        menu.add(deleteItem);
+        menu.add(itemMenu("home", rootUrl, "isEnabled", "main"));
+        menu.add(itemMenu("add", rootUrl+"add/", "isEnabled", "add"));
+        menu.add(itemMenu("edit-icon", rootUrl+"change/", "isDisabled", "change"));
+        menu.add(itemMenu("delete-icon-1", "#", "isDisabled", "delete"));
     }
 
     // Отображение главной страницы
     @GetMapping("/")
     public String index(Model model) {
-        // Добавление атрибутов модели
-
         model.addAttribute("menu", menu);
         model.addAttribute("headerTemplate", "main");
         model.addAttribute("urlAPIablist", urlAPIablist);
         model.addAttribute("urlchange", rootUrl+urlchange);
-
-
-        webService.getFieldNames();
-        // Возвращение имени шаблона для отображения
         return "index";
     }
 
@@ -110,17 +83,16 @@ public class WebController {
         model.addAttribute("urlAPIablist", urlAPIablist);
         model.addAttribute("rootUrl", rootUrl);
         model.addAttribute("requestType", "PUT");
-        // model.addAttribute("fields", webService.findById(pid));
-        // model.addAttribute("id", pid);
-
-        Optional<AddressBook> oab = addressBookRepository.findById(pid);
-
-        if (oab.isPresent()) {
-            AddressBook ab = oab.get();
-            model.addAttribute("fields", ab.getFieldNames());
-        }
+        model.addAttribute("fields", webService.getFieldNames(pid));
         model.addAttribute("id", pid);
         return "index";
     }
-
+    private  HashMap<String, String> itemMenu(String title, String url, String dis, String id){
+        HashMap<String, String> item = new HashMap<>();
+            item.put("title", title);
+            item.put("url_name", url);
+            item.put("dis", dis);
+            item.put("id", id);
+        return item;
+    }
 }

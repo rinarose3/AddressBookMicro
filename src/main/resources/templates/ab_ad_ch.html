@@ -5,8 +5,8 @@
     <input  th:if="${requestType == 'PUT'}" type="hidden" name="id" th:value="${id}">
 
     <p th:each="f : ${fields}">
-        <label th:for="'id_'+${f[field]}" th:text="${f[label]}+':'"></label>
-        <input type="text" th:name="${f[field]}" th:id="'id_'+${f[field]}" th:value="${f[value]}" required>
+        <label th:for="'id_' + ${f.key}" th:text="${f.value['label']} + ':'"></label>
+        <input type="text" th:name="${f.key}" th:id="'id_' + ${f.key}" th:value="${f.value['value']}" required>
     </p>
 
     <p><button type="submit">Отправить</button></p>
